@@ -3,7 +3,7 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 # Supported base images: ubuntu:22.04, ubuntu:20.04, ubuntu:18.04
-ARG UBUNTU_RELEASE=20.04
+ARG UBUNTU_RELEASE=22.04
 ARG GSTREAMER_BASE_IMAGE=ghcr.io/selkies-project/selkies-gstreamer/gstreamer
 ARG GSTREAMER_BASE_IMAGE_RELEASE=master
 ARG PY_BUILD_IMAGE=ghcr.io/selkies-project/selkies-gstreamer/py-build:master
@@ -74,8 +74,8 @@ Pin-Priority: -1" > /etc/apt/preferences.d/firefox-ppa && \
         xfce4-terminal \
         adwaita-icon-theme-full \
         dbus-x11 \
-        x11-apps \
-        firefox && \
+        x11-apps && \
+        #firefox && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Ubuntu 22.04 specific packages
@@ -164,8 +164,12 @@ python3 signalling_web.py --disable-ssl --port 8080 --web_root=/opt/gst-web &\n\
 "\
     > /etc/motd
 
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections && \
+    echo keyboard-configuration keyboard-configuration/layout select 'German (DE)' | debconf-set-selections && \
+    echo keyboard-configuration keyboard-configuration/layoutcode select 'de' | debconf-set-selections 
+
 # Add login user
-ARG TZ=UTC
+ARG TZ=CET
 ARG PASSWD=mypasswd
 RUN groupadd -g 1000 user && \
     useradd -ms /bin/bash user -u 1000 -g 1000 && \
